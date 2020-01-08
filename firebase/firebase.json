@@ -1,0 +1,8 @@
+{
+  "apiKey": "AIzaSyCGaDtwR1-MgAMFCuH71CjdeSYXFHCn3YA",
+  "authDomain": "rn-graphql-hasura.firebaseapp.com",
+  "databaseURL": "https://rn-graphql-hasura.firebaseio.com",
+  "projectId": "rn-graphql-hasura",
+  "storageBucket": "rn-graphql-hasura.appspot.com",
+  "messagingSenderId": "1093316845276"
+}
