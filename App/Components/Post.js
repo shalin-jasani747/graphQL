@@ -11,56 +11,79 @@ import {
   Right,
 } from 'native-base';
 import {Image} from 'react-native';
+import moment from 'moment';
 import styles from './Styles/PostStyles';
 
-const userInfoSection = () => (
+const userInfoSection = user => (
   <CardItem>
     <Left>
-      <Thumbnail source={{uri: 'https://placeimg.com/320/320/any'}} />
+      <Thumbnail source={{uri: user.avatar}} />
       <Body>
-        <Text>NativeBase</Text>
-        <Text note>GeekyAnts</Text>
+        <Text>{user.name}</Text>
       </Body>
     </Left>
     <Right>
-      <Icon
-        style={styles.userFollowIcon}
-        type="SimpleLineIcons"
-        name="user-follow"
-      />
+      <Button transparent>
+        <Icon
+          style={styles.userFollowIcon}
+          type="SimpleLineIcons"
+          name="user-follow"
+        />
+      </Button>
     </Right>
   </CardItem>
 );
 
-const postImageSection = () => (
-  <CardItem cardBody>
+const postImageSection = (post, navigation) => (
+  <CardItem
+    cardBody
+    button
+    activeOpacity={1}
+    onPress={() => navigation.navigate('EditPostScreen', {post})}>
     <Image
-      source={{uri: 'https://placeimg.com/640/640/any'}}
+      source={{uri: post?.url}}
+      resizeMode="cover"
       style={styles.postImage}
     />
   </CardItem>
 );
 
-const postInfoSection = () => (
+const imageCaptionSection = postCaption => (
+  <CardItem>
+    <Text>{postCaption}</Text>
+  </CardItem>
+);
+
+const postInfoSection = (count, created_at) => (
   <CardItem>
     <Left>
       <Button transparent>
         <Icon name="thumbs-up" />
-        <Text>12 Likes</Text>
+        <Text>{`${count} Likes`}</Text>
       </Button>
     </Left>
     <Right>
-      <Text>11h ago</Text>
+      <Text>{`${moment(created_at).fromNow()}`}</Text>
     </Right>
   </CardItem>
 );
 
-export default () => {
+export default ({post, navigation}) => {
+  const {
+    caption,
+    url,
+    created_at,
+    likes_aggregate: {
+      aggregate: {count},
+    },
+    user,
+  } = post;
   return (
     <Card>
-      {userInfoSection()}
-      {postImageSection()}
-      {postInfoSection()}
+      {userInfoSection(user)}
+      {postImageSection(post, navigation)}
+      {imageCaptionSection(caption)}
+      {postInfoSection(count, created_at)}
     </Card>
   );
 };

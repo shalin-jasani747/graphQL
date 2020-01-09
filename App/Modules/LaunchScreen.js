@@ -6,7 +6,8 @@ const LaunchScreen = ({navigation}) => {
   const validateSession = async () => {
     const session = await AsyncStorage.getItem('@reactnative-graphql:session');
     if (session) {
-      const {exp} = JSON.parse(session);
+      const {exp, token} = JSON.parse(session);
+      console.log(token);
       var currentTime = Math.floor(new Date().getTime() / 1000);
       if (currentTime < exp) {
         navigation.navigate('MainStack');

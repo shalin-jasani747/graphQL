@@ -3,11 +3,11 @@ import {Container, Content} from 'native-base';
 import CustomHeader from '../../Components/CustomHeader';
 import PostForm from '../../Components/PostForm';
 
-class CreatePostScreen extends Component {
+class EditPostScreen extends Component {
   renderCustomHeader() {
     return (
       <CustomHeader
-        headerTitle="Create Post"
+        headerTitle="Edit Post"
         leftIcon="ios-arrow-back"
         onLeftIconPress={() => this.props.navigation.goBack()}
       />
@@ -15,15 +15,16 @@ class CreatePostScreen extends Component {
   }
 
   render() {
+    const post = this.props.navigation.getParam('post', {});
     return (
       <Container>
         {this.renderCustomHeader()}
         <Content padder scrollEnabled={false}>
-          <PostForm />
+          <PostForm post={post} />
         </Content>
       </Container>
     );
   }
 }
 
-export default CreatePostScreen;
+export default EditPostScreen;

@@ -3,7 +3,7 @@ import {ApplicationStyles, Colors} from '../../Theme';
 
 const styles = StyleSheet.create({
   ...ApplicationStyles.screen,
-  postImage: {flex: 1, height: 200, width: null},
+  postImage: {flex: 1, height: 210, width: null, backgroundColor: Colors.black},
   userFollowIcon: {
     color: Colors.darkGray,
   },
