@@ -7,8 +7,8 @@ import {isNull, isEmpty, isUndefined} from 'lodash';
 import ImagePicker from 'react-native-image-picker';
 import BlockButton from './BlockButton';
 import {
-  CREATE_POST,
-  GET_POST,
+  INSERT_POST,
+  FETCH_POST,
   UPDATE_POST,
   DELETE_POST,
 } from '../Modules/Post/PostQueries';
@@ -37,14 +37,41 @@ var BUTTONS = [
 var DESTRUCTIVE_INDEX = 2;
 var CANCEL_INDEX = 3;
 
-function createPost(create_post, postData, navigation) {
+const updateCache = (client, {data: {insert_post, delete_post}}) => {
+  let newPostData = {};
+  const data = client.readQuery({
+    query: FETCH_POST,
+  });
+
+  if (!isUndefined(insert_post)) {
+    const newPost = insert_post.returning[0];
+    newPostData = {
+      post: [newPost, ...data.post],
+    };
+  }
+
+  if (!isUndefined(delete_post)) {
+    const deletePost = delete_post.returning[0];
+    newPostData = {
+      post: data.post.filter(t => t.id !== deletePost.id),
+    };
+  }
+
+  client.writeQuery({
+    query: FETCH_POST,
+    data: newPostData,
+  });
+};
+
+function createPost(insert_post, postData, navigation) {
   const {caption, postPicture} = postData;
-  create_post({
+  insert_post({
     variables: {
       caption,
       url: postPicture,
     },
-    refetchQueries: [{query: GET_POST}],
+    update: updateCache,
+    // refetchQueries: [{query: FETCH_POST}],
   }).then(({data: {insert_post: {affected_rows}}}) => {
     if (affected_rows) {
       navigation.goBack();
@@ -54,14 +81,12 @@ function createPost(create_post, postData, navigation) {
 
 const updatePost = (update_post, postData, navigation) => {
   const {id, caption, postPicture} = postData;
-  console.log(postData);
   update_post({
     variables: {
       id,
       caption,
       url: postPicture,
     },
-    refetchQueries: [{query: GET_POST}],
   }).then(({data: {update_post: {affected_rows}}}) => {
     if (affected_rows) {
       navigation.goBack();
@@ -75,8 +100,8 @@ const deletePost = (delete_post, postData, navigation) => {
     variables: {
       id,
     },
-    refetchQueries: [{query: GET_POST}],
-  }).then(({data: {update_post: {affected_rows}}}) => {
+    update: updateCache,
+  }).then(({data: {delete_post: {affected_rows}}}) => {
     if (affected_rows) {
       navigation.goBack();
     }
@@ -85,7 +110,7 @@ const deletePost = (delete_post, postData, navigation) => {
 
 function RenderSubmitButton({postData, isEditPost}) {
   const navigation = useNavigation();
-  const [create_post] = useMutation(CREATE_POST);
+  const [insert_post] = useMutation(INSERT_POST);
   const [update_post] = useMutation(UPDATE_POST);
   return (
     <BlockButton
@@ -95,7 +120,7 @@ function RenderSubmitButton({postData, isEditPost}) {
         if (isEditPost) {
           updatePost(update_post, postData, navigation);
         } else {
-          createPost(create_post, postData, navigation);
+          createPost(insert_post, postData, navigation);
         }
       }}
     />

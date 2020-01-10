@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const GET_POST = gql`
+const FETCH_POST = gql`
   query {
-    post {
+    post(order_by: {id: desc}, limit: 5) {
       id
       caption
       url
@@ -20,9 +20,44 @@ const GET_POST = gql`
   }
 `;
 
-const CREATE_POST = gql`
+const LOAD_MORE_POST = gql`
+  query($last_id: Int!) {
+    post(order_by: {id: desc}, where: {id: {_lt: $last_id}}, limit: 10) {
+      id
+      caption
+      url
+      created_at
+      likes_aggregate {
+        aggregate {
+          count
+        }
+      }
+      user {
+        name
+        avatar
+      }
+    }
+  }
+`;
+
+const INSERT_POST = gql`
   mutation($caption: String!, $url: String!) {
     insert_post(objects: [{caption: $caption, url: $url}]) {
+      returning {
+        id
+        caption
+        url
+        created_at
+        likes_aggregate {
+          aggregate {
+            count
+          }
+        }
+        user {
+          name
+          avatar
+        }
+      }
       affected_rows
     }
   }
@@ -31,6 +66,21 @@ const CREATE_POST = gql`
 const UPDATE_POST = gql`
   mutation($id: Int!, $caption: String!, $url: String!) {
     update_post(where: {id: {_eq: $id}}, _set: {caption: $caption, url: $url}) {
+      returning {
+        id
+        caption
+        url
+        created_at
+        likes_aggregate {
+          aggregate {
+            count
+          }
+        }
+        user {
+          name
+          avatar
+        }
+      }
       affected_rows
     }
   }
@@ -39,9 +89,12 @@ const UPDATE_POST = gql`
 const DELETE_POST = gql`
   mutation($id: Int!) {
     delete_post(where: {id: {_eq: $id}}) {
+      returning {
+        id
+      }
       affected_rows
     }
   }
 `;
 
-export {GET_POST, CREATE_POST, UPDATE_POST, DELETE_POST};
+export {FETCH_POST, INSERT_POST, UPDATE_POST, DELETE_POST, LOAD_MORE_POST};

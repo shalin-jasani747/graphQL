@@ -4,8 +4,9 @@ import {FlatList, View, Text, ActivityIndicator} from 'react-native';
 import {useNavigation} from 'react-navigation-hooks';
 import {Container} from 'native-base';
 import CustomHeader from '../../Components/CustomHeader';
+import LoadMore from '../../Components/LoadMorePost';
 import Post from '../../Components/Post';
-import {GET_POST} from './PostQueries';
+import {FETCH_POST} from './PostQueries';
 import styles from './Styles/PostListStyles';
 
 const renderListEmptyComponent = () => (
@@ -28,23 +29,30 @@ const renderCustomHeader = navigation => (
   />
 );
 
-const renderErrorMessage = () => (
+const renderErrorMessage = error => (
   <View style={styles.emptyComponent}>
     <Text>Error while fetching the posts!</Text>
   </View>
 );
 
+const loadMore = () => console.log('here');
+
 const RenderFlatList = () => {
-  const {data, error, loading} = useQuery(GET_POST);
+  const {data, error, loading} = useQuery(FETCH_POST);
   const navigation = useNavigation();
+
+  console.log(error);
   if (error) {
-    return renderErrorMessage();
+    return renderErrorMessage(error);
   }
 
   return (
     <FlatList
       data={data?.post}
       renderItem={({item}) => renderPost(item, navigation)}
+      ListFooterComponent={() => (loading ? renderLoadingComponent() : null)}
+      onEndReached={() => loadMore()}
+      onEndReachedThreshold="1"
       ListEmptyComponent={
         loading ? renderLoadingComponent() : renderListEmptyComponent()
       }

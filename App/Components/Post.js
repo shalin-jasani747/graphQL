@@ -13,6 +13,7 @@ import {
 import {Image} from 'react-native';
 import moment from 'moment';
 import styles from './Styles/PostStyles';
+import {Colors} from '../Theme';
 
 const userInfoSection = user => (
   <CardItem>
@@ -58,7 +59,11 @@ const postInfoSection = (count, created_at) => (
   <CardItem>
     <Left>
       <Button transparent>
-        <Icon name="thumbs-up" />
+        <Icon
+          type="FontAwesome"
+          name="thumbs-o-up"
+          style={{color: Colors.gray}}
+        />
         <Text>{`${count} Likes`}</Text>
       </Button>
     </Left>
@@ -71,7 +76,6 @@ const postInfoSection = (count, created_at) => (
 export default ({post, navigation}) => {
   const {
     caption,
-    url,
     created_at,
     likes_aggregate: {
       aggregate: {count},
