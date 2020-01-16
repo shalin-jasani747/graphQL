@@ -6,7 +6,7 @@ import {Container} from 'native-base';
 import CustomHeader from '../../Components/CustomHeader';
 import LoadMore from '../../Components/LoadMorePost';
 import Post from '../../Components/Post';
-import {FETCH_POST} from './PostQueries';
+import {FETCH_POST, NEW_POST_SUBSCRIPTION} from './PostQueries';
 import styles from './Styles/PostListStyles';
 
 const renderListEmptyComponent = () => (
@@ -37,11 +37,32 @@ const renderErrorMessage = error => (
 
 const loadMore = () => console.log('here');
 
+const fetchLatestPost = subscribeToMore => {
+  subscribeToMore({
+    document: NEW_POST_SUBSCRIPTION,
+    updateQuery: (prev, {subscriptionData}) => {
+      if (!subscriptionData.data) {
+        return prev;
+      }
+      const newPost = subscriptionData.data.post[0];
+      const exists = prev.post.find(({id}) => id === newPost.id);
+      if (exists) {
+        return prev;
+      }
+
+      return Object.assign({}, prev, {
+        post: [newPost, ...prev.post],
+      });
+    },
+  });
+};
+
 const RenderFlatList = () => {
-  const {data, error, loading} = useQuery(FETCH_POST);
+  const {subscribeToMore, data, error, loading} = useQuery(FETCH_POST);
   const navigation = useNavigation();
 
-  console.log(error);
+  fetchLatestPost(subscribeToMore);
+
   if (error) {
     return renderErrorMessage(error);
   }
@@ -50,7 +71,7 @@ const RenderFlatList = () => {
     <FlatList
       data={data?.post}
       renderItem={({item}) => renderPost(item, navigation)}
-      ListFooterComponent={() => (loading ? renderLoadingComponent() : null)}
+      // ListFooterComponent={() => (loading ? renderLoadingComponent() : null)}
       onEndReached={() => loadMore()}
       onEndReachedThreshold="1"
       ListEmptyComponent={

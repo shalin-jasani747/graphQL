@@ -1,5 +1,25 @@
 import gql from 'graphql-tag';
 
+const NEW_POST_SUBSCRIPTION = gql`
+  subscription {
+    post(order_by: {id: desc}, limit: 1) {
+      id
+      caption
+      url
+      created_at
+      likes_aggregate {
+        aggregate {
+          count
+        }
+      }
+      user {
+        name
+        avatar
+      }
+    }
+  }
+`;
+
 const FETCH_POST = gql`
   query {
     post(order_by: {id: desc}, limit: 5) {
@@ -97,4 +117,11 @@ const DELETE_POST = gql`
   }
 `;
 
-export {FETCH_POST, INSERT_POST, UPDATE_POST, DELETE_POST, LOAD_MORE_POST};
+export {
+  FETCH_POST,
+  INSERT_POST,
+  UPDATE_POST,
+  DELETE_POST,
+  LOAD_MORE_POST,
+  NEW_POST_SUBSCRIPTION,
+};

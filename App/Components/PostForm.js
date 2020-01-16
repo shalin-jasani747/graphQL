@@ -1,11 +1,12 @@
 import {useMutation} from '@apollo/react-hooks';
-import React, {Component} from 'react';
-import {View, Image, Text, TouchableOpacity} from 'react-native';
+import React, {Component, createRef} from 'react';
+import {View, Image, Text} from 'react-native';
 import {Form, Item, Input, Icon, ActionSheet} from 'native-base';
 import {useNavigation} from 'react-navigation-hooks';
 import {isNull, isEmpty, isUndefined} from 'lodash';
 import ImagePicker from 'react-native-image-picker';
 import BlockButton from './BlockButton';
+import ImageUpload from './ImageUpload';
 import {
   INSERT_POST,
   FETCH_POST,
@@ -37,9 +38,9 @@ var BUTTONS = [
 var DESTRUCTIVE_INDEX = 2;
 var CANCEL_INDEX = 3;
 
-const updateCache = (client, {data: {insert_post, delete_post}}) => {
+const updateCache = (store, {data: {insert_post, delete_post}}) => {
   let newPostData = {};
-  const data = client.readQuery({
+  const data = store.readQuery({
     query: FETCH_POST,
   });
 
@@ -57,7 +58,7 @@ const updateCache = (client, {data: {insert_post, delete_post}}) => {
     };
   }
 
-  client.writeQuery({
+  store.writeQuery({
     query: FETCH_POST,
     data: newPostData,
   });
@@ -150,9 +151,7 @@ class PostForm extends Component {
       postPicture: !isEmpty(props) ? props?.post?.url : null,
       caption: !isEmpty(props) ? props?.post?.caption : '',
     };
-    this.takePostPicture = this.takePostPicture.bind(this);
-    this.openPhoneLibrary = this.openPhoneLibrary.bind(this);
-    this.deletePostPicture = this.deletePostPicture.bind(this);
+    this.ImageUpload = createRef();
   }
 
   takePostPicture() {
@@ -217,12 +216,9 @@ class PostForm extends Component {
 
   renderPlaceHolderImageView() {
     return (
-      <TouchableOpacity
-        activeOpacity={1}
-        style={styles.nullPostView}
-        onPress={() => this.showActionSheet()}>
+      <ImageUpload buttonStyle={styles.nullPostView} ref={this.ImageUpload}>
         <Icon name="ios-add" />
-      </TouchableOpacity>
+      </ImageUpload>
     );
   }
 
@@ -230,15 +226,12 @@ class PostForm extends Component {
     return (
       <View>
         <Image source={{uri: postPicture}} style={styles.postImage} />
-        <TouchableOpacity
-          activeOpacity={1}
-          style={styles.touchable}
-          onPress={() => this.showActionSheet()}>
+        <ImageUpload buttonStyle={styles.touchable} ref={this.ImageUpload}>
           <View style={styles.buttonView}>
             <Icon type="FontAwesome" name="camera" style={styles.font} />
             <Text style={styles.font}>Edit</Text>
           </View>
-        </TouchableOpacity>
+        </ImageUpload>
       </View>
     );
   }
