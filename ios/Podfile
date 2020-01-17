@@ -37,6 +37,7 @@ target 'GraphQLDemo' do
   pod 'Firebase/Core'
   pod 'Firebase/Auth', '~> 6.13.0'
   pod 'Firebase/Database'
+  pod 'Firebase/Storage'
   
   target 'GraphQLDemoTests' do
     inherit! :search_paths

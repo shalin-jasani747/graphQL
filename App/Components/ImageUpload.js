@@ -1,8 +1,17 @@
-import React, {Component} from 'react';
-import {TouchableOpacity} from 'react-native';
-import {ActionSheet} from 'native-base';
+import React, {useState, useImperativeHandle} from 'react';
+import {
+  View,
+  Image,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import {Item, Icon, ActionSheet} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
-import {isEmpty} from 'lodash';
+import FastImage from 'react-native-fast-image';
+import {isNull} from 'lodash';
+import {uploadImageToFirebase} from '../Services/Firebase';
+import styles from './Styles/ImageUploadStyle';
 
 const options = {
   quality: 1.0,
@@ -27,88 +36,129 @@ var BUTTONS = [
 var DESTRUCTIVE_INDEX = 2;
 var CANCEL_INDEX = 3;
 
-class ImageUpload extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      postPicture: !isEmpty(props) ? props?.post?.url : null,
-    };
-    this.takePostPicture = this.takePostPicture.bind(this);
-    this.openPhoneLibrary = this.openPhoneLibrary.bind(this);
-    this.deletePostPicture = this.deletePostPicture.bind(this);
-  }
-
-  takePostPicture() {
-    ImagePicker.launchCamera(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        this.setState({
-          postPicture: response?.uri,
-        });
-      }
-    });
-  }
-
-  openPhoneLibrary() {
-    ImagePicker.launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        this.setState({
-          postPicture: response?.uri,
-        });
-      }
-    });
-  }
-
-  deletePostPicture() {
-    this.setState({
-      postPicture: null,
-    });
-  }
-
-  executeFunctions(buttonIndex) {
-    switch (buttonIndex) {
-      case 0:
-        this.takePostPicture();
-        break;
-      case 1:
-        this.openPhoneLibrary();
-        break;
-      case 2:
-        this.deletePostPicture();
-        break;
+const takePostPicture = (setPostPicture, setUploadingImage) => {
+  ImagePicker.launchCamera(options, response => {
+    if (response.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (response.error) {
+      console.log('ImagePicker Error: ', response.error);
+    } else {
+      setUploadingImage(true);
+      uploadImageToFirebase(response?.uri, 'post_images').then(firebaseUrl => {
+        setPostPicture(firebaseUrl);
+        setUploadingImage(false);
+      });
     }
-  }
+  });
+};
 
-  showActionSheet() {
-    ActionSheet.show(
-      {
-        options: BUTTONS,
-        cancelButtonIndex: CANCEL_INDEX,
-        destructiveButtonIndex: DESTRUCTIVE_INDEX,
-        title: 'Select Post Photo',
-      },
-      buttonIndex => this.executeFunctions(buttonIndex),
-    );
-  }
+const openPhoneLibrary = (setPostPicture, setUploadingImage) => {
+  console.log(setUploadingImage);
+  ImagePicker.launchImageLibrary(options, response => {
+    if (response.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (response.error) {
+      console.log('ImagePicker Error: ', response.error);
+    } else {
+      setUploadingImage(true);
+      uploadImageToFirebase(response?.uri, 'post_images').then(firebaseUrl => {
+        setPostPicture(firebaseUrl);
+        setUploadingImage(false);
+      });
+    }
+  });
+};
 
-  render() {
-    const {children, buttonStyle} = this.props;
-    return (
+const deletePostPicture = setPostPicture => setPostPicture(null);
+
+const executeFunctions = (buttonIndex, setPostPicture, setUploadingImage) => {
+  switch (buttonIndex) {
+    case 0:
+      takePostPicture(setPostPicture, setUploadingImage);
+      break;
+    case 1:
+      openPhoneLibrary(setPostPicture, setUploadingImage);
+      break;
+    case 2:
+      deletePostPicture(setPostPicture, setUploadingImage);
+      break;
+  }
+};
+
+const showActionSheet = (setPostPicture, setUploadingImage) => {
+  ActionSheet.show(
+    {
+      options: BUTTONS,
+      cancelButtonIndex: CANCEL_INDEX,
+      destructiveButtonIndex: DESTRUCTIVE_INDEX,
+      title: 'Select Post Photo',
+    },
+    buttonIndex =>
+      executeFunctions(buttonIndex, setPostPicture, setUploadingImage),
+  );
+};
+
+const renderPlaceHolderImageView = (setPostPicture, setUploadingImage) => {
+  return (
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.nullPostView}
+      onPress={() => showActionSheet(setPostPicture, setUploadingImage)}>
+      <Icon name="ios-add" />
+    </TouchableOpacity>
+  );
+};
+
+const renderSelectedImageView = (
+  postPicture,
+  setPostPicture,
+  setUploadingImage,
+) => {
+  return (
+    <View>
+      <FastImage
+        style={styles.postImage}
+        source={{
+          uri: postPicture,
+          priority: FastImage.priority.normal,
+        }}
+        resizeMode={FastImage.resizeMode.cover}
+      />
       <TouchableOpacity
         activeOpacity={1}
-        style={buttonStyle}
-        onPress={() => this.showActionSheet()}>
-        {children}
+        style={styles.touchable}
+        onPress={() => showActionSheet(setPostPicture, setUploadingImage)}>
+        <View style={styles.buttonView}>
+          <Icon type="FontAwesome" name="camera" style={styles.font} />
+          <Text style={styles.font}>Edit</Text>
+        </View>
       </TouchableOpacity>
-    );
-  }
-}
+    </View>
+  );
+};
 
-export default ImageUpload;
+const loadingView = () => (
+  <View style={styles.loadingView}>
+    <ActivityIndicator color="red" />
+  </View>
+);
+
+export default React.forwardRef((props, ref) => {
+  const [postPicture, setPostPicture] = useState(props.imageUrl);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  useImperativeHandle(ref, () => {
+    return {
+      getImageUrl: postPicture,
+    };
+  });
+
+  return (
+    <Item style={styles.postImageView}>
+      {uploadingImage && loadingView()}
+      {isNull(postPicture) &&
+        renderPlaceHolderImageView(setPostPicture, setUploadingImage)}
+      {!isNull(postPicture) &&
+        renderSelectedImageView(postPicture, setPostPicture, setUploadingImage)}
+    </Item>
+  );
+});

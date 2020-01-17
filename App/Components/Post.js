@@ -10,7 +10,7 @@ import {
   Body,
   Right,
 } from 'native-base';
-import {Image} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import moment from 'moment';
 import styles from './Styles/PostStyles';
 import {Colors} from '../Theme';
@@ -41,10 +41,13 @@ const postImageSection = (post, navigation) => (
     button
     activeOpacity={1}
     onPress={() => navigation.navigate('EditPostScreen', {post})}>
-    <Image
-      source={{uri: post?.url}}
-      resizeMode="cover"
+    <FastImage
       style={styles.postImage}
+      source={{
+        uri: post?.url,
+        priority: FastImage.priority.normal,
+      }}
+      resizeMode={FastImage.resizeMode.cover}
     />
   </CardItem>
 );

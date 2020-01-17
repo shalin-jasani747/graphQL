@@ -1,4 +1,5 @@
 import firebase from 'react-native-firebase';
+import {Platform} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 function firebaseSignUp(email, password) {
@@ -67,4 +68,25 @@ async function watchAuthStateChange() {
   });
 }
 
-export {firebaseSignUp, firebaseLogin, watchAuthStateChange};
+function uploadImageToFirebase(uri, folderName) {
+  return new Promise((resolve, reject) => {
+    const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+    const sessionId = new Date().getTime();
+    const imageRef = firebase
+      .storage()
+      .ref(folderName)
+      .child(`${sessionId}`);
+    imageRef
+      .put(uploadUri)
+      .then(() => imageRef.getDownloadURL())
+      .then(url => resolve(url))
+      .catch(error => reject(error));
+  });
+}
+
+export {
+  firebaseSignUp,
+  firebaseLogin,
+  watchAuthStateChange,
+  uploadImageToFirebase,
+};
