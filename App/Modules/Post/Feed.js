@@ -35,23 +35,23 @@ const renderErrorMessage = error => (
   </View>
 );
 
-const loadMore = () => console.log('here');
+const loadMore = () => {};
 
 const fetchLatestPost = subscribeToMore => {
   subscribeToMore({
     document: NEW_POST_SUBSCRIPTION,
     updateQuery: (prev, {subscriptionData}) => {
-      if (!subscriptionData.data) {
+      if (!subscriptionData?.data) {
         return prev;
       }
-      const newPost = subscriptionData.data.post[0];
-      const exists = prev.post.find(({id}) => id === newPost.id);
+      const newPost = subscriptionData?.data?.post[0];
+      const exists = prev?.post.find(({id}) => id === newPost.id);
       if (exists) {
         return prev;
       }
 
       return Object.assign({}, prev, {
-        post: [newPost, ...prev.post],
+        post: [newPost, ...prev?.post],
       });
     },
   });
@@ -81,8 +81,7 @@ const RenderFlatList = () => {
     />
   );
 };
-
-const PostListingScreen = ({navigation}) => {
+export default ({navigation}) => {
   return (
     <Container>
       {renderCustomHeader(navigation)}
@@ -90,5 +89,3 @@ const PostListingScreen = ({navigation}) => {
     </Container>
   );
 };
-
-export default PostListingScreen;

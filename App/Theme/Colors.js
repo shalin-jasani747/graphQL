@@ -9,7 +9,7 @@ const colors = {
   summarSky: '#1d80be',
   gray: '#999',
   darkGray: '#666',
-  darkGreen: '#1d9a00'
+  darkGreen: '#1d9a00',
 };
 
 export default colors;

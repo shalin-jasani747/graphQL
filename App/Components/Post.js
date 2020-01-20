@@ -4,33 +4,39 @@ import {
   CardItem,
   Thumbnail,
   Text,
-  Button,
-  Icon,
   Left,
   Body,
   Right,
+  View,
 } from 'native-base';
+import initials from 'initials';
+import {upperCase, startCase} from 'lodash';
 import FastImage from 'react-native-fast-image';
 import moment from 'moment';
+import Like from './Like';
+import Follow from './Follow';
 import styles from './Styles/PostStyles';
-import {Colors} from '../Theme';
+
+const placeholderView = user => (
+  <View style={styles.userAvatar}>
+    <Text style={styles.avatarText}>{upperCase(initials(user.name))}</Text>
+  </View>
+);
 
 const userInfoSection = user => (
   <CardItem>
     <Left>
-      <Thumbnail source={{uri: user.avatar}} />
+      {!user.avatar ? (
+        <Thumbnail source={{uri: user.avatar}} />
+      ) : (
+        placeholderView(user)
+      )}
       <Body>
-        <Text>{user.name}</Text>
+        <Text>{startCase(user.name)}</Text>
       </Body>
     </Left>
     <Right>
-      <Button transparent>
-        <Icon
-          style={styles.userFollowIcon}
-          type="SimpleLineIcons"
-          name="user-follow"
-        />
-      </Button>
+      <Follow postUserId={user.id} />
     </Right>
   </CardItem>
 );
@@ -58,17 +64,10 @@ const imageCaptionSection = postCaption => (
   </CardItem>
 );
 
-const postInfoSection = (count, created_at) => (
+const postInfoSection = (postId, created_at) => (
   <CardItem>
     <Left>
-      <Button transparent>
-        <Icon
-          type="FontAwesome"
-          name="thumbs-o-up"
-          style={{color: Colors.gray}}
-        />
-        <Text>{`${count} Likes`}</Text>
-      </Button>
+      <Like postId={postId} />
     </Left>
     <Right>
       <Text>{`${moment(created_at).fromNow()}`}</Text>
@@ -77,20 +76,13 @@ const postInfoSection = (count, created_at) => (
 );
 
 export default ({post, navigation}) => {
-  const {
-    caption,
-    created_at,
-    likes_aggregate: {
-      aggregate: {count},
-    },
-    user,
-  } = post;
+  const {id, caption, created_at, user} = post;
   return (
     <Card>
       {userInfoSection(user)}
       {postImageSection(post, navigation)}
       {imageCaptionSection(caption)}
-      {postInfoSection(count, created_at)}
+      {postInfoSection(id, created_at)}
     </Card>
   );
 };

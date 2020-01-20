@@ -2,7 +2,7 @@ import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import AuthScreen from '../Modules/Auth/AuthScreen';
-import PostListingScreen from '../Modules/Post/PostListingScreen';
+import Feed from '../Modules/Post/Feed';
 import CreatePostScreen from '../Modules/Post/CreatePostScreen';
 import EditPostScreen from '../Modules/Post/EditPostScreen';
 import UserScreen from '../Modules/User/UserScreen';
@@ -21,14 +21,14 @@ const AuthStack = createStackNavigator(
 
 const PostStack = createStackNavigator(
   {
-    PostListingScreen: {screen: PostListingScreen},
+    Feed: {screen: Feed},
     CreatePostScreen: {screen: CreatePostScreen},
     EditPostScreen: {screen: EditPostScreen},
   },
   {
     // Default config for all screens
     headerMode: 'none',
-    initialRouteName: 'PostListingScreen',
+    initialRouteName: 'Feed',
   },
 );
 

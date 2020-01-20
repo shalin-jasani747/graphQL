@@ -89,7 +89,6 @@ function RenderSubmitButton({postData, isEditPost, imageUrl}) {
   const [insert_post] = useMutation(INSERT_POST);
   const [update_post] = useMutation(UPDATE_POST);
   const newPostData = {...postData, url: imageUrl?.current?.getImageUrl};
-  console.log(newPostData);
   return (
     <BlockButton
       buttonTitle="Save"

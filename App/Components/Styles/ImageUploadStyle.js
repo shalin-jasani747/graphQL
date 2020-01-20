@@ -14,12 +14,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9e6e6',
     borderBottomWidth: 0,
   },
-  nullPostView: {
-    flex: 1,
-    height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   font: {
     color: Colors.white,
     fontSize: 15,
@@ -34,7 +28,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingHorizontal: 8,
   },
-  touchable: {
+  editButtonView: {
     position: 'absolute',
     bottom: 10,
     right: 10,
@@ -54,6 +48,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 99999,
   },
+  addIcon: {paddingRight: 0},
 });
 
 export default styles;

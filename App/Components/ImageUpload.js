@@ -1,11 +1,5 @@
 import React, {useState, useImperativeHandle} from 'react';
-import {
-  View,
-  Image,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import {View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
 import {Item, Icon, ActionSheet} from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 import FastImage from 'react-native-fast-image';
@@ -61,10 +55,10 @@ const openPhoneLibrary = (setPostPicture, setUploadingImage) => {
       console.log('ImagePicker Error: ', response.error);
     } else {
       setUploadingImage(true);
-      uploadImageToFirebase(response?.uri, 'post_images').then(firebaseUrl => {
-        setPostPicture(firebaseUrl);
-        setUploadingImage(false);
-      });
+      // uploadImageToFirebase(response?.uri, 'post_images').then(firebaseUrl => {
+      setPostPicture(response?.uri);
+      setUploadingImage(false);
+      // });
     }
   });
 };
@@ -98,13 +92,16 @@ const showActionSheet = (setPostPicture, setUploadingImage) => {
   );
 };
 
-const renderPlaceHolderImageView = (setPostPicture, setUploadingImage) => {
+const renderPlaceHolderImageView = (
+  setPostPicture,
+  setUploadingImage,
+  placeholderViewStyle,
+) => {
   return (
     <TouchableOpacity
       activeOpacity={1}
-      style={styles.nullPostView}
       onPress={() => showActionSheet(setPostPicture, setUploadingImage)}>
-      <Icon name="ios-add" />
+      <Icon style={styles.addIcon} name="ios-add" />
     </TouchableOpacity>
   );
 };
@@ -113,11 +110,13 @@ const renderSelectedImageView = (
   postPicture,
   setPostPicture,
   setUploadingImage,
+  postImageStyle,
+  editButtonViewStyle,
 ) => {
   return (
     <View>
       <FastImage
-        style={styles.postImage}
+        style={[styles.postImage, postImageStyle]}
         source={{
           uri: postPicture,
           priority: FastImage.priority.normal,
@@ -126,7 +125,7 @@ const renderSelectedImageView = (
       />
       <TouchableOpacity
         activeOpacity={1}
-        style={styles.touchable}
+        style={[styles.editButtonView, editButtonViewStyle]}
         onPress={() => showActionSheet(setPostPicture, setUploadingImage)}>
         <View style={styles.buttonView}>
           <Icon type="FontAwesome" name="camera" style={styles.font} />
@@ -153,12 +152,18 @@ export default React.forwardRef((props, ref) => {
   });
 
   return (
-    <Item style={styles.postImageView}>
+    <Item style={[styles.postImageView, props.imageViewStyle]}>
       {uploadingImage && loadingView()}
       {isNull(postPicture) &&
         renderPlaceHolderImageView(setPostPicture, setUploadingImage)}
       {!isNull(postPicture) &&
-        renderSelectedImageView(postPicture, setPostPicture, setUploadingImage)}
+        renderSelectedImageView(
+          postPicture,
+          setPostPicture,
+          setUploadingImage,
+          props.postImageStyle,
+          props.editButtonViewStyle,
+        )}
     </Item>
   );
 });

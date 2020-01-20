@@ -7,12 +7,8 @@ const NEW_POST_SUBSCRIPTION = gql`
       caption
       url
       created_at
-      likes_aggregate {
-        aggregate {
-          count
-        }
-      }
       user {
+        id
         name
         avatar
       }
@@ -27,12 +23,8 @@ const FETCH_POST = gql`
       caption
       url
       created_at
-      likes_aggregate {
-        aggregate {
-          count
-        }
-      }
       user {
+        id
         name
         avatar
       }
@@ -47,12 +39,8 @@ const LOAD_MORE_POST = gql`
       caption
       url
       created_at
-      likes_aggregate {
-        aggregate {
-          count
-        }
-      }
       user {
+        id
         name
         avatar
       }
@@ -68,12 +56,8 @@ const INSERT_POST = gql`
         caption
         url
         created_at
-        likes_aggregate {
-          aggregate {
-            count
-          }
-        }
         user {
+          id
           name
           avatar
         }
@@ -91,12 +75,8 @@ const UPDATE_POST = gql`
         caption
         url
         created_at
-        likes_aggregate {
-          aggregate {
-            count
-          }
-        }
         user {
+          id
           name
           avatar
         }
@@ -118,10 +98,10 @@ const DELETE_POST = gql`
 `;
 
 export {
+  NEW_POST_SUBSCRIPTION,
   FETCH_POST,
+  LOAD_MORE_POST,
   INSERT_POST,
   UPDATE_POST,
   DELETE_POST,
-  LOAD_MORE_POST,
-  NEW_POST_SUBSCRIPTION,
 };
