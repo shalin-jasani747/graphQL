@@ -66,7 +66,10 @@ class AuthScreen extends React.Component {
           {this.renderTab('signUp', authType)}
         </View>
         <View style={styles.tabContent}>
-          <AuthForm authType={authType} navigation={this.props.navigation} />
+          <AuthForm
+            authType={authType}
+            updateTab={tabHeader => this.switchTabs(tabHeader)}
+          />
         </View>
       </View>
     );

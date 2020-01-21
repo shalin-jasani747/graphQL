@@ -9,6 +9,7 @@ import Secrets from 'react-native-config';
 
 const makeApolloClient = () => {
   // create an apollo link instance, a network interface for apollo client
+  console.log('makeApolloClient');
 
   const httpLink = new HttpLink({
     uri: Secrets.API_URL,

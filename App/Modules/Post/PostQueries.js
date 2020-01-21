@@ -4,29 +4,30 @@ const NEW_POST_SUBSCRIPTION = gql`
   subscription {
     post(order_by: {id: desc}, limit: 1) {
       id
-      caption
-      url
-      created_at
-      user {
-        id
-        name
-        avatar
-      }
+    }
+  }
+`;
+
+const FETCH_POST_LIST = gql`
+  query($offset: Int!) {
+    post(order_by: {id: desc}, offset: $offset, limit: 5) {
+      id
     }
   }
 `;
 
 const FETCH_POST = gql`
-  query {
-    post(order_by: {id: desc}, limit: 5) {
+  query($postId: Int!) {
+    post(where: {id: {_eq: $postId}}) {
       id
       caption
       url
+      user_id
       created_at
       user {
         id
-        name
         avatar
+        name
       }
     }
   }
@@ -34,16 +35,8 @@ const FETCH_POST = gql`
 
 const LOAD_MORE_POST = gql`
   query($last_id: Int!) {
-    post(order_by: {id: desc}, where: {id: {_lt: $last_id}}, limit: 10) {
+    post(order_by: {id: desc}, where: {id: {_lt: $last_id}}, limit: 5) {
       id
-      caption
-      url
-      created_at
-      user {
-        id
-        name
-        avatar
-      }
     }
   }
 `;
@@ -99,6 +92,7 @@ const DELETE_POST = gql`
 
 export {
   NEW_POST_SUBSCRIPTION,
+  FETCH_POST_LIST,
   FETCH_POST,
   LOAD_MORE_POST,
   INSERT_POST,

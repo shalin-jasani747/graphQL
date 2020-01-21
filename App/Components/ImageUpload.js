@@ -55,10 +55,10 @@ const openPhoneLibrary = (setPostPicture, setUploadingImage) => {
       console.log('ImagePicker Error: ', response.error);
     } else {
       setUploadingImage(true);
-      // uploadImageToFirebase(response?.uri, 'post_images').then(firebaseUrl => {
-      setPostPicture(response?.uri);
-      setUploadingImage(false);
-      // });
+      uploadImageToFirebase(response?.uri, 'post_images').then(firebaseUrl => {
+        setPostPicture(firebaseUrl);
+        setUploadingImage(false);
+      });
     }
   });
 };

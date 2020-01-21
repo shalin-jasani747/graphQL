@@ -22,7 +22,7 @@ const updateCache = (store, {data: {insert_post, delete_post}}) => {
   if (!isUndefined(insert_post)) {
     const newPost = insert_post.returning[0];
     newPostData = {
-      post: [newPost, ...data.post],
+      post: [newPost, ...data?.post],
     };
   }
 

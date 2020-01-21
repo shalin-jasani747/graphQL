@@ -1,12 +1,11 @@
 import {useQuery} from '@apollo/react-hooks';
-import React from 'react';
+import React, {useState} from 'react';
 import {FlatList, View, Text, ActivityIndicator} from 'react-native';
-import {useNavigation} from 'react-navigation-hooks';
 import {Container} from 'native-base';
 import CustomHeader from '../../Components/CustomHeader';
-import LoadMore from '../../Components/LoadMorePost';
+import {uniq} from 'lodash';
 import Post from '../../Components/Post';
-import {FETCH_POST, NEW_POST_SUBSCRIPTION} from './PostQueries';
+import {FETCH_POST_LIST, NEW_POST_SUBSCRIPTION} from './PostQueries';
 import styles from './Styles/PostListStyles';
 
 const renderListEmptyComponent = () => (
@@ -15,9 +14,7 @@ const renderListEmptyComponent = () => (
   </View>
 );
 
-const renderPost = (post, navigation) => (
-  <Post navigation={navigation} post={post} />
-);
+const renderPost = postId => <Post postId={postId} />;
 
 const renderLoadingComponent = () => <ActivityIndicator />;
 
@@ -35,7 +32,24 @@ const renderErrorMessage = error => (
   </View>
 );
 
-const loadMore = () => {};
+const loadMore = (post, fetchMore, canLoadPost) => {
+  if (!canLoadPost) {
+    return;
+  }
+  fetchMore({
+    variables: {
+      offset: post.length,
+    },
+    updateQuery: (prev, {fetchMoreResult}) => {
+      if (!fetchMoreResult) {
+        return prev;
+      }
+      return {
+        post: uniq([...prev.post, ...fetchMoreResult.post]),
+      };
+    },
+  });
+};
 
 const fetchLatestPost = subscribeToMore => {
   subscribeToMore({
@@ -50,18 +64,31 @@ const fetchLatestPost = subscribeToMore => {
         return prev;
       }
 
-      return Object.assign({}, prev, {
-        post: [newPost, ...prev?.post],
-      });
+      return {
+        post: uniq([newPost, ...prev?.post]),
+      };
     },
   });
 };
 
 const RenderFlatList = () => {
-  const {subscribeToMore, data, error, loading} = useQuery(FETCH_POST);
-  const navigation = useNavigation();
+  const [canLoadPost, setCanLoadPost] = useState(false);
+
+  const {data, error, loading, subscribeToMore, fetchMore} = useQuery(
+    FETCH_POST_LIST,
+    {
+      variables: {offset: 0},
+    },
+    {
+      fetchPolicy: 'cache-and-network',
+    },
+  );
 
   fetchLatestPost(subscribeToMore);
+
+  if (loading) {
+    renderLoadingComponent();
+  }
 
   if (error) {
     return renderErrorMessage(error);
@@ -70,13 +97,14 @@ const RenderFlatList = () => {
   return (
     <FlatList
       data={data?.post}
-      renderItem={({item}) => renderPost(item, navigation)}
-      // ListFooterComponent={() => (loading ? renderLoadingComponent() : null)}
-      onEndReached={() => loadMore()}
-      onEndReachedThreshold="1"
-      ListEmptyComponent={
-        loading ? renderLoadingComponent() : renderListEmptyComponent()
-      }
+      renderItem={({item}) => renderPost(item.id)}
+      onEndReached={() => loadMore(data?.post, fetchMore, canLoadPost)}
+      onEndReachedThreshold="0"
+      onScrollBeginDrag={() => setCanLoadPost(true)}
+      onScrollEndDrag={() => setCanLoadPost(false)}
+      onMomentumScrollBegin={() => setCanLoadPost(true)}
+      onMomentumScrollEnd={() => setCanLoadPost(false)}
+      ListEmptyComponent={renderListEmptyComponent()}
       keyExtractor={item => `${item.id}`}
     />
   );

@@ -31,8 +31,8 @@ const UNFOLLOW_USER = gql`
 `;
 
 const NUMBER_OF_FOLLOWING = gql`
-  query($id: String!) {
-    follow_aggregate(where: {follower_id: {_eq: $id}}) {
+  query($userId: String!) {
+    follow_aggregate(where: {follower_id: {_eq: $userId}}) {
       aggregate {
         count
       }
@@ -41,8 +41,8 @@ const NUMBER_OF_FOLLOWING = gql`
 `;
 
 const NUMBER_OF_FOLLOWERS = gql`
-  query($id: String!) {
-    follow_aggregate(where: {following_id: {_eq: $id}}) {
+  query($userId: String!) {
+    follow_aggregate(where: {following_id: {_eq: $userId}}) {
       aggregate {
         count
       }

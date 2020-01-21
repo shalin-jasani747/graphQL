@@ -33,6 +33,7 @@ function firebaseLogin(email, password) {
 }
 
 function setSessionDetails(token, tokenDetails) {
+  console.log('setSessionDetails');
   AsyncStorage.setItem(
     '@reactnative-graphql:session',
     JSON.stringify({

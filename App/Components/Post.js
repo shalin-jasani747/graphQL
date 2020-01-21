@@ -1,20 +1,23 @@
-import React from 'react';
+import {useQuery} from '@apollo/react-hooks';
+import initials from 'initials';
+import {startCase, upperCase} from 'lodash';
+import moment from 'moment';
 import {
+  Body,
   Card,
   CardItem,
-  Thumbnail,
-  Text,
   Left,
-  Body,
   Right,
+  Text,
+  Thumbnail,
   View,
 } from 'native-base';
-import initials from 'initials';
-import {upperCase, startCase} from 'lodash';
+import React from 'react';
 import FastImage from 'react-native-fast-image';
-import moment from 'moment';
-import Like from './Like';
+import {useNavigation} from 'react-navigation-hooks';
 import Follow from './Follow';
+import Like from './Like';
+import {FETCH_POST} from '../Modules/Post/PostQueries';
 import styles from './Styles/PostStyles';
 
 const placeholderView = user => (
@@ -26,7 +29,7 @@ const placeholderView = user => (
 const userInfoSection = user => (
   <CardItem>
     <Left>
-      {!user.avatar ? (
+      {user.avatar ? (
         <Thumbnail source={{uri: user.avatar}} />
       ) : (
         placeholderView(user)
@@ -75,12 +78,33 @@ const postInfoSection = (postId, created_at) => (
   </CardItem>
 );
 
-export default ({post, navigation}) => {
-  const {id, caption, created_at, user} = post;
+const renderErrorMessage = error => (
+  <View style={styles.emptyComponent}>
+    <Text>Error while fetching the posts!</Text>
+  </View>
+);
+
+export default ({postId}) => {
+  const navigation = useNavigation();
+
+  const {data, error, loading} = useQuery(FETCH_POST, {
+    variables: {postId},
+  });
+
+  if (loading) {
+    return <View />;
+  }
+
+  if (error) {
+    return renderErrorMessage(error);
+  }
+
+  const {id, caption, created_at, user} = data?.post[0];
+
   return (
     <Card>
       {userInfoSection(user)}
-      {postImageSection(post, navigation)}
+      {postImageSection(data?.post[0], navigation)}
       {imageCaptionSection(caption)}
       {postInfoSection(id, created_at)}
     </Card>

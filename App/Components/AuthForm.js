@@ -4,11 +4,12 @@ import {Form} from 'native-base';
 import {startCase} from 'lodash';
 import BlockButton from './BlockButton';
 import StackedLabelFormInput from './StackedLabelFormInput';
+import {useNavigation} from 'react-navigation-hooks';
 import {firebaseSignUp, firebaseLogin} from '../Services/Firebase';
 import {REGISTER_USER} from '../Modules/Auth/AuthQueries';
 import styles from './Styles/AuthFormStyles';
 
-const doSignUp = (email, password, insert_user, navigation) => {
+const doSignUp = (email, password, insert_user, updateTab) => {
   firebaseSignUp(email, password).then(userId => {
     if (userId) {
       insert_user({
@@ -17,7 +18,7 @@ const doSignUp = (email, password, insert_user, navigation) => {
         },
       })
         .then(data => {
-          navigation.navigate('MainStack');
+          updateTab('logIn');
         })
         .catch(e => {
           console.log(e.message);
@@ -32,9 +33,10 @@ const doLogin = (email, password, navigation) => {
   });
 };
 
-const AuthForm = ({authType, navigation}) => {
+const AuthForm = ({authType, updateTab}) => {
+  const navigation = useNavigation();
   const [insert_user] = useMutation(REGISTER_USER);
-  const [email, setEmail] = useState('test@test.com');
+  const [email, setEmail] = useState('test456@test.com');
   const [password, setPassword] = useState('password');
   return (
     <>
@@ -60,7 +62,7 @@ const AuthForm = ({authType, navigation}) => {
         style={styles.blockButton}
         onButtonPress={() =>
           authType === 'signUp'
-            ? doSignUp(email, password, insert_user, navigation)
+            ? doSignUp(email, password, insert_user, updateTab)
             : doLogin(email, password, navigation)
         }
       />
