@@ -34,10 +34,12 @@ const renderRightIcon = (
 
 const CustomHeader = ({
   headerTitle,
+  noLeftIcon,
   leftIcon,
   leftIconType,
   leftIconText,
   rightIcon,
+  noRightIcon,
   rightIconType,
   rightIconText,
   onLeftIconPress,
@@ -45,7 +47,9 @@ const CustomHeader = ({
 }) => (
   <Header>
     <Left>
-      {renderLeftIcon(leftIconType, leftIcon, leftIconText, onLeftIconPress)}
+      {noLeftIcon
+        ? null
+        : renderLeftIcon(leftIconType, leftIcon, leftIconText, onLeftIconPress)}
     </Left>
     <Body>
       <Title>
@@ -53,19 +57,23 @@ const CustomHeader = ({
       </Title>
     </Body>
     <Right>
-      {renderRightIcon(
-        rightIconType,
-        rightIcon,
-        rightIconText,
-        onRightIconPress,
-      )}
+      {noRightIcon
+        ? null
+        : renderRightIcon(
+            rightIconType,
+            rightIcon,
+            rightIconText,
+            onRightIconPress,
+          )}
     </Right>
   </Header>
 );
 
 CustomHeader.propTypes = {
   leftIcon: PropTypes.string,
+  noLeftIcon: PropTypes.bool,
   rightIcon: PropTypes.string,
+  noRightIcon: PropTypes.bool,
   headerTitle: PropTypes.string,
   leftIconType: PropTypes.string,
   leftIconText: PropTypes.string,

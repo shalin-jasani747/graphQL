@@ -36,7 +36,7 @@ const doLogin = (email, password, navigation) => {
 const AuthForm = ({authType, updateTab}) => {
   const navigation = useNavigation();
   const [insert_user] = useMutation(REGISTER_USER);
-  const [email, setEmail] = useState('test456@test.com');
+  const [email, setEmail] = useState('test@test.com');
   const [password, setPassword] = useState('password');
   return (
     <>

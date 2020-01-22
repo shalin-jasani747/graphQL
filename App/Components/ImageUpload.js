@@ -47,7 +47,6 @@ const takePostPicture = (setPostPicture, setUploadingImage) => {
 };
 
 const openPhoneLibrary = (setPostPicture, setUploadingImage) => {
-  console.log(setUploadingImage);
   ImagePicker.launchImageLibrary(options, response => {
     if (response.didCancel) {
       console.log('User cancelled image picker');

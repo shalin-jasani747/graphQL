@@ -1,46 +1,39 @@
 import {useQuery} from '@apollo/react-hooks';
-import initials from 'initials';
-import {startCase, upperCase} from 'lodash';
+import {startCase} from 'lodash';
 import moment from 'moment';
-import {
-  Body,
-  Card,
-  CardItem,
-  Left,
-  Right,
-  Text,
-  Thumbnail,
-  View,
-} from 'native-base';
+import {Body, Card, CardItem, Left, Right, Text, View} from 'native-base';
 import React from 'react';
+import {TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {useNavigation} from 'react-navigation-hooks';
-import Follow from './Follow';
 import Like from './Like';
+import ImageThumbnail from '../Components/ImageThumbnail';
+// import AdditionalOptions from '../Components/AdditionalOptions';
 import {FETCH_POST} from '../Modules/Post/PostQueries';
 import styles from './Styles/PostStyles';
 
-const placeholderView = user => (
-  <View style={styles.userAvatar}>
-    <Text style={styles.avatarText}>{upperCase(initials(user.name))}</Text>
-  </View>
-);
-
-const userInfoSection = user => (
+const userInfoSection = (navigation, user, disableNavigation) => (
   <CardItem>
     <Left>
-      {user.avatar ? (
-        <Thumbnail source={{uri: user.avatar}} />
-      ) : (
-        placeholderView(user)
-      )}
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() =>
+          disableNavigation
+            ? {}
+            : navigation.navigate('UserProfileScreen', {
+                userId: user.id,
+                anotherUserProfile: true,
+              })
+        }>
+        <ImageThumbnail user={user} />
+      </TouchableOpacity>
       <Body>
         <Text>{startCase(user.name)}</Text>
       </Body>
     </Left>
-    <Right>
-      <Follow postUserId={user.id} />
-    </Right>
+    {/* <Right>
+      <AdditionalOptions postUserId={user.id} />
+    </Right> */}
   </CardItem>
 );
 
@@ -84,7 +77,7 @@ const renderErrorMessage = error => (
   </View>
 );
 
-export default ({postId}) => {
+export default ({postId, disableNavigation}) => {
   const navigation = useNavigation();
 
   const {data, error, loading} = useQuery(FETCH_POST, {
@@ -103,7 +96,7 @@ export default ({postId}) => {
 
   return (
     <Card>
-      {userInfoSection(user)}
+      {userInfoSection(navigation, user, disableNavigation)}
       {postImageSection(data?.post[0], navigation)}
       {imageCaptionSection(caption)}
       {postInfoSection(id, created_at)}

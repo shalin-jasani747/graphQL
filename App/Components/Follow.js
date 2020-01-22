@@ -36,15 +36,17 @@ const UnFollowUser = ({postUserId, setFollowed}) => {
   return (
     <Button
       transparent
+      style={styles.followButton}
       onPress={() => {
         unfollowUser();
         setFollowed(false);
       }}>
-      <Icon
+      <Text style={styles.followText}>Following</Text>
+      {/* <Icon
         type="SimpleLineIcons"
         name="user-following"
         style={styles.followIcon}
-      />
+      /> */}
     </Button>
   );
 };
@@ -72,15 +74,17 @@ const FollowUser = ({postUserId, setFollowed}) => {
   return (
     <Button
       transparent
+      style={styles.followButton}
       onPress={() => {
         followUser();
         setFollowed(true);
       }}>
-      <Icon
+      <Text style={styles.followText}>Follow</Text>
+      {/* <Icon
         type="SimpleLineIcons"
         name="user-follow"
         style={styles.followIcon}
-      />
+      /> */}
     </Button>
   );
 };
@@ -120,5 +124,5 @@ export default ({postUserId}) => {
   ) : (
     <FollowUser postUserId={postUserId} setFollowed={setFollowed} />
   );
-  return <View style={styles.followView}>{followButton}</View>;
+  return followButton;
 };

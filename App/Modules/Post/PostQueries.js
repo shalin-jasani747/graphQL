@@ -33,14 +33,6 @@ const FETCH_POST = gql`
   }
 `;
 
-const LOAD_MORE_POST = gql`
-  query($last_id: Int!) {
-    post(order_by: {id: desc}, where: {id: {_lt: $last_id}}, limit: 5) {
-      id
-    }
-  }
-`;
-
 const INSERT_POST = gql`
   mutation($caption: String!, $url: String!) {
     insert_post(objects: [{caption: $caption, url: $url}]) {
@@ -94,7 +86,6 @@ export {
   NEW_POST_SUBSCRIPTION,
   FETCH_POST_LIST,
   FETCH_POST,
-  LOAD_MORE_POST,
   INSERT_POST,
   UPDATE_POST,
   DELETE_POST,

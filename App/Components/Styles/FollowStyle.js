@@ -2,11 +2,6 @@ import {StyleSheet} from 'react-native';
 import {Colors} from '../../Theme';
 
 const styles = StyleSheet.create({
-  followView: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    flexDirection: 'row',
-  },
   followIcon: {
     color: Colors.gray,
     fontSize: 22,
@@ -14,7 +9,18 @@ const styles = StyleSheet.create({
     marginRight: 5,
     paddingTop: 0,
   },
-  followText: {color: Colors.gray, fontSize: 15},
+  followText: {color: Colors.black, fontSize: 15},
+  followButton: {
+    borderWidth: 1,
+    marginHorizontal: 15,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: Colors.gray,
+    height: 30,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
 });
 
 export default styles;

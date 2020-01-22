@@ -6,6 +6,7 @@ import Feed from '../Modules/Post/Feed';
 import CreatePostScreen from '../Modules/Post/CreatePostScreen';
 import EditPostScreen from '../Modules/Post/EditPostScreen';
 import UserScreen from '../Modules/User/UserScreen';
+import EditUserScreen from '../Modules/User/EditUserScreen';
 import LaunchScreen from '../Modules/LaunchScreen';
 
 const AuthStack = createStackNavigator(
@@ -24,6 +25,7 @@ const PostStack = createStackNavigator(
     Feed: {screen: Feed},
     CreatePostScreen: {screen: CreatePostScreen},
     EditPostScreen: {screen: EditPostScreen},
+    UserProfileScreen: {screen: UserScreen},
   },
   {
     // Default config for all screens
@@ -35,6 +37,7 @@ const PostStack = createStackNavigator(
 const UserStack = createStackNavigator(
   {
     UserScreen: {screen: UserScreen},
+    EditUserScreen: {screen: EditUserScreen},
   },
   {
     // Default config for all screens

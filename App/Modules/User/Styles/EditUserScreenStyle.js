@@ -4,18 +4,15 @@ import {ApplicationStyles, Colors} from '../../../Theme';
 const styles = StyleSheet.create({
   ...ApplicationStyles.screen,
   imageUplaodView: {
-    marginHorizontal: 5,
-    marginVertical: 15,
-    flexDirection: 'row',
     alignItems: 'center',
   },
   imageView: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 90,
+    height: 90,
+    borderRadius: 45,
   },
   editButtonView: {
-    right: 10,
+    right: 15,
     width: 60,
   },
   inputView: {
@@ -32,8 +29,7 @@ const styles = StyleSheet.create({
   },
   editProfile: {
     borderWidth: 1,
-    marginHorizontal: 5,
-    marginBottom: 10,
+    marginHorizontal: 15,
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: Colors.gray,
@@ -46,10 +42,6 @@ const styles = StyleSheet.create({
   },
   userAvatarView: {
     marginBottom: 10,
-    width: 80,
-    height: 80,
-    overflow: 'hidden',
-    borderRadius: 40,
   },
   userAvatar: {
     width: 80,
